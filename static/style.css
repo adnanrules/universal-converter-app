@@ -41,7 +41,14 @@ h1 {
 .subtitle {
   color: var(--muted);
   font-size: 14px;
+  margin: 0 0 4px;
+}
+
+.limit-note {
+  color: var(--muted);
+  font-size: 12px;
   margin: 0 0 24px;
+  opacity: 0.75;
 }
 
 #url {

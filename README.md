@@ -1,14 +1,16 @@
 # Media Converter
 
-A tiny, self-hosted web app: paste a link from YouTube, Twitter/X, TikTok,
-Instagram, or any of the [hundreds of sites yt-dlp supports](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md),
-pick MP4 or MP3, and download the converted file.
+A tiny desktop app: paste a link from YouTube, Twitter/X, TikTok, Instagram,
+or any of the [hundreds of sites yt-dlp supports](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md),
+pick MP4 or MP3, and get the converted file. Clips up to 3 minutes long.
 
-- **Runs entirely on your own machine.** It's a local Flask server bound to
-  `127.0.0.1` — nothing is exposed to the network, and there's no shared
-  backend or telemetry. When you convert a link, your computer talks directly
-  to the source platform; nothing passes through any server the author
-  controls.
+- **It's an app, not a website.** Running it opens a native app window
+  (via [pywebview](https://pywebview.flowrl.com/)) — no browser tab, no
+  address bar, no terminal to watch. Just a window with a Convert button.
+- **Runs entirely on your own machine.** Under the hood there's a small local
+  server bound to `127.0.0.1`, invisible to the network, with no shared
+  backend or telemetry anywhere. When you convert a link, your computer talks
+  directly to the source platform.
 - **No build step, no bundling ffmpeg binaries into the repo.** ffmpeg is
   resolved automatically at runtime (system install if you have one,
   otherwise a cached static binary via `imageio-ffmpeg`).
@@ -43,15 +45,20 @@ venv/bin/pip install -r requirements.txt
 venv/bin/python app.py
 ```
 
-Then open http://127.0.0.1:5000
+An app window opens automatically — that's it.
 
 ## How it works
 
 - Frontend is a single static page (`static/`) — no framework, no build step.
-- Backend (`app.py`) is a small Flask app. Each conversion runs in a
-  background thread and reports progress that the page polls; the
-  finished file is served from `downloads/`, which is cleaned up
-  automatically after about an hour.
+- Backend (`app.py`) is a small Flask app that only ever listens on
+  `127.0.0.1`, on a random free port. On launch, `pywebview` opens a native
+  window pointed at that local server, so the whole thing feels and behaves
+  like a normal desktop app rather than something you browse to.
+- Each conversion runs in a background thread: a quick metadata probe checks
+  the clip's length (rejecting anything over 3 minutes before any bytes are
+  downloaded), then the real download/conversion runs and reports progress
+  that the window polls. The finished file is served from `downloads/`,
+  which is cleaned up automatically after about an hour.
 - All the actual extraction/conversion logic is [yt-dlp](https://github.com/yt-dlp/yt-dlp),
   which is what gives this broad site support for free.
 
@@ -60,7 +67,8 @@ Then open http://127.0.0.1:5000
 Only use this on content you have the right to download, and respect each
 platform's terms of service and applicable copyright law. This project is a
 generic front-end for yt-dlp; it doesn't circumvent DRM and only works on
-publicly accessible media.
+publicly accessible media. The 3-minute limit is meant to keep this a tool
+for short clips, not a way to pull down full videos.
 
 ## Contributing
 

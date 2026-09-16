@@ -1,6 +1,7 @@
 import glob
 import os
 import re
+import socket
 import threading
 import time
 import uuid
@@ -8,6 +9,8 @@ import uuid
 from flask import Flask, jsonify, request, send_file, abort, Response
 
 import yt_dlp
+
+MAX_DURATION_SECONDS = 3 * 60
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOWNLOAD_DIR = os.path.join(BASE_DIR, "downloads")
@@ -70,7 +73,38 @@ def make_progress_hook(job_id):
     return hook
 
 
+def probe_duration(url):
+    probe_opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "noplaylist": True,
+        "socket_timeout": 30,
+        "skip_download": True,
+    }
+    with yt_dlp.YoutubeDL(probe_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+    return info.get("duration")
+
+
 def run_job(job_id, url, media_format, quality):
+    set_job(job_id, status="checking", progress=0)
+
+    try:
+        duration = probe_duration(url)
+    except Exception as exc:  # noqa: BLE001
+        set_job(job_id, status="error", error=f"Could not read that link: {exc}")
+        return
+
+    if duration is None or duration > MAX_DURATION_SECONDS:
+        limit_min = MAX_DURATION_SECONDS // 60
+        set_job(
+            job_id,
+            status="error",
+            error=f"This app only converts clips up to {limit_min} minutes long.",
+        )
+        return
+
+    set_job(job_id, status="downloading", progress=0)
     outtmpl = os.path.join(DOWNLOAD_DIR, f"{job_id}.%(ext)s")
 
     ydl_opts = {
@@ -105,7 +139,6 @@ def run_job(job_id, url, media_format, quality):
         ydl_opts["merge_output_format"] = "mp4"
 
     try:
-        set_job(job_id, status="downloading", progress=0)
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
             title = info.get("title", "media")
@@ -204,6 +237,47 @@ def cleanup_loop():
                 JOBS.pop(jid, None)
 
 
-if __name__ == "__main__":
+def find_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+def wait_for_server(port, timeout=10):
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            with socket.create_connection(("127.0.0.1", port), timeout=0.5):
+                return True
+        except OSError:
+            time.sleep(0.05)
+    return False
+
+
+def main():
     threading.Thread(target=cleanup_loop, daemon=True).start()
-    app.run(host="127.0.0.1", port=5000, debug=False)
+
+    port = find_free_port()
+
+    server_thread = threading.Thread(
+        target=lambda: app.run(host="127.0.0.1", port=port, debug=False, use_reloader=False),
+        daemon=True,
+    )
+    server_thread.start()
+    wait_for_server(port)
+
+    import webview
+
+    webview.create_window(
+        "Media Converter",
+        f"http://127.0.0.1:{port}",
+        width=480,
+        height=700,
+        resizable=True,
+        min_size=(420, 620),
+    )
+    webview.start()
+
+
+if __name__ == "__main__":
+    main()

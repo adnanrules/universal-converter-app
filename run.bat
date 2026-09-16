@@ -6,5 +6,4 @@ if not exist venv (
     call venv\Scripts\pip install -r requirements.txt
 )
 
-start "" http://127.0.0.1:5000
 call venv\Scripts\python app.py

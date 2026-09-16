@@ -112,7 +112,9 @@ async function pollStatus(jobId) {
       throw new Error(data.error || "Lost track of job");
     }
 
-    if (data.status === "downloading") {
+    if (data.status === "checking") {
+      setProgress(0, "Checking clip length…");
+    } else if (data.status === "downloading") {
       setProgress(data.progress || 0, `Downloading… ${data.progress || 0}%`);
     } else if (data.status === "converting") {
       setProgress(95, "Converting…");
