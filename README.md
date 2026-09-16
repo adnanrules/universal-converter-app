@@ -15,13 +15,21 @@ pick MP4 or MP3, and get the converted file. Clips up to 3 minutes long.
   resolved automatically at runtime (system install if you have one,
   otherwise a cached static binary via `imageio-ffmpeg`).
 
-## Requirements
+## Download (Windows)
+
+Grab `MediaConverter.exe` from the [latest release](../../releases/latest) —
+no Python, no install, nothing else to set up. Double-click it and the app
+window opens.
+
+## Run from source
+
+### Requirements
 
 - Python 3.9+
 
 That's it — ffmpeg is handled automatically (see above).
 
-## Run it
+### Run it
 
 **Windows:** double-click [`run.bat`](run.bat), or:
 
@@ -46,6 +54,20 @@ venv/bin/python app.py
 ```
 
 An app window opens automatically — that's it.
+
+## Building the standalone .exe
+
+```bash
+python -m venv venv
+venv\Scripts\pip install -r requirements-dev.txt
+venv\Scripts\pyinstaller --noconfirm MediaConverter.spec
+```
+
+or just run [`build.bat`](build.bat) (`build.sh` on macOS/Linux). The result
+is `dist/MediaConverter.exe`, a single file with Python, yt-dlp, and the
+frontend all bundled in — nothing else needs to be installed on the machine
+that runs it. Pushing a `v*` tag also builds and attaches it to a GitHub
+Release automatically (see `.github/workflows/build.yml`).
 
 ## How it works
 
