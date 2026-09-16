@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Media Converter</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="card">
+    <h1>Universal Media Converter</h1>
+    <p class="subtitle">Paste a link from YouTube, Twitter/X, TikTok, Instagram &amp; more</p>
+
+    <form id="convert-form">
+      <input
+        type="url"
+        id="url"
+        placeholder="https://..."
+        autocomplete="off"
+        required
+      />
+
+      <div class="row">
+        <div class="format-toggle">
+          <button type="button" class="fmt-btn active" data-format="mp4">MP4</button>
+          <button type="button" class="fmt-btn" data-format="mp3">MP3</button>
+        </div>
+
+        <select id="quality"></select>
+      </div>
+
+      <button type="submit" id="submit-btn">Convert</button>
+    </form>
+
+    <div id="status" class="status hidden">
+      <div class="progress-track">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <div id="status-text" class="status-text">Starting…</div>
+    </div>
+
+    <div id="result" class="result hidden">
+      <p id="result-title"></p>
+      <a id="download-link" href="#" download>Download file</a>
+      <button type="button" id="reset-btn">Convert another</button>
+    </div>
+
+    <div id="error" class="error hidden"></div>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
