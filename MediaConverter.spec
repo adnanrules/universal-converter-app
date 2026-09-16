@@ -5,7 +5,7 @@ datas = [('static', 'static')]
 binaries = []
 hiddenimports = []
 
-for pkg in ('yt_dlp', 'imageio_ffmpeg', 'webview', 'clr_loader', 'pythonnet'):
+for pkg in ('yt_dlp', 'imageio_ffmpeg', 'webview', 'clr_loader', 'pythonnet', 'curl_cffi', 'mutagen'):
     try:
         pkg_datas, pkg_binaries, pkg_hiddenimports = collect_all(pkg)
     except Exception:
@@ -48,4 +48,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='static/icon.ico',
 )

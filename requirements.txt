@@ -2,3 +2,5 @@ flask==3.0.3
 yt-dlp>=2024.8.6
 imageio-ffmpeg>=0.5.1
 pywebview>=5.2
+curl_cffi>=0.5.10
+mutagen>=1.47

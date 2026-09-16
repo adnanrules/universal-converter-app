@@ -4,19 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Media Converter</title>
+<link rel="icon" href="/static/icon.ico">
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <main class="card">
-    <h1>Universal Media Converter</h1>
-    <p class="subtitle">Paste a link from YouTube, Twitter/X, TikTok, Instagram &amp; more</p>
+    <div class="header">
+      <svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="24" height="24" rx="7" fill="url(#logo-gradient)"/>
+        <path d="M12 6v8m0 0-3.5-3.5M12 14l3.5-3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M7 17h10" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="logo-gradient" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7d6ef0"/>
+            <stop offset="1" stop-color="#5a4bd6"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div>
+        <h1>Media Converter</h1>
+        <p class="subtitle">YouTube, Twitter/X, TikTok, Instagram &amp; more</p>
+      </div>
+    </div>
     <p class="limit-note">Clips up to 3 minutes long</p>
 
     <form id="convert-form">
       <input
         type="url"
         id="url"
-        placeholder="https://..."
+        placeholder="Paste a video link…"
         autocomplete="off"
         required
       />
@@ -34,15 +50,26 @@
     </form>
 
     <div id="status" class="status hidden">
+      <div class="status-row">
+        <div class="spinner"></div>
+        <div id="status-text" class="status-text">Starting…</div>
+      </div>
       <div class="progress-track">
         <div id="progress-bar" class="progress-bar"></div>
       </div>
-      <div id="status-text" class="status-text">Starting…</div>
     </div>
 
     <div id="result" class="result hidden">
+      <div class="result-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="11" fill="var(--success)"/>
+          <path d="M7 12.5l3 3 7-7" stroke="#06210f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <p id="result-title"></p>
-      <a id="download-link" href="#" download>Download file</a>
+      <button type="button" id="save-btn">Save File…</button>
+      <button type="button" id="reveal-btn" class="link-btn hidden">Show in folder</button>
+      <p id="save-note" class="save-note hidden"></p>
       <button type="button" id="reset-btn">Convert another</button>
     </div>
 
